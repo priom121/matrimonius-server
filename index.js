@@ -26,7 +26,16 @@ async function run() {
     // Connect the client to the server	(optional starting in v4.7)
 //     await client.connect();
     const matrimonyCollection = client.db("matrimonyDb").collection("blog");
+    const bioCollection = client.db("matrimonyDb").collection("biodata")
 
+// bioData load
+app.get('/biodata',async(req,res)=>{
+  const result = await bioCollection.find().toArray()
+  res.send(result)
+})
+
+
+// home page card load
   app.get('/blog',async(req,res)=>{
        const result = await matrimonyCollection.find().toArray()
        res.send(result)
