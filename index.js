@@ -27,10 +27,40 @@ async function run() {
 //     await client.connect();
     const matrimonyCollection = client.db("matrimonyDb").collection("blog");
     const bioCollection = client.db("matrimonyDb").collection("biodata")
+    const reviewCollection = client.db("matrimonyDb").collection("review")
+
+app.get('/review',async(req,res)=>{
+  const result = await reviewCollection.find().toArray();
+  res.send(result)
+})
 
 // bioData load
 app.get('/biodata',async(req,res)=>{
   const result = await bioCollection.find().toArray()
+  res.send(result)
+})
+
+// app.get('/biodata/search',async(req,res)=>{
+//   const {minAge , maxAge, biodataT,division} =req.query;
+//   const filter ={};
+//   if(minAge && maxAge){
+//     filter.age ={$gte:minAge ,$lte:maxAge}
+//   }
+//   if(biodata){
+//     filter.type = biodata
+//   }
+//   if(division){
+//     filter.division =division
+//   }
+//   const data = await bioCollection.find(filter).limit(20).toArray();
+//   res.send(data)
+// })
+
+
+app.get('/biodata/:id',async(req,res)=>{
+  const id =req.params.id;
+  const query ={_id: new ObjectId(id)}
+  const result = await bioCollection.findOne(query)
   res.send(result)
 })
 
