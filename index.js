@@ -28,6 +28,16 @@ async function run() {
     const matrimonyCollection = client.db("matrimonyDb").collection("blog");
     const bioCollection = client.db("matrimonyDb").collection("biodata")
     const reviewCollection = client.db("matrimonyDb").collection("review")
+    const favoriteCollection = client.db("matrimonyDb").collection("favorite")
+
+    // favourite collection
+    app.post('/favorite',async(req,res)=>{
+      const request =req.body;
+      const result =await  favoriteCollection.insertOne(request)
+      res.send(result)
+    })
+
+
 
 app.get('/review',async(req,res)=>{
   const result = await reviewCollection.find().toArray();
