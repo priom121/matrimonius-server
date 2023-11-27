@@ -55,7 +55,11 @@ app.get('/biodata',async(req,res)=>{
 //   const data = await bioCollection.find(filter).limit(20).toArray();
 //   res.send(data)
 // })
-
+app.post('/biodata',async(req,res)=>{
+  const request =req.body;
+  const result =await bioCollection.insertOne(request)
+  res.send(result)
+})
 
 app.get('/biodata/:id',async(req,res)=>{
   const id =req.params.id;
