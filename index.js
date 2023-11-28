@@ -31,6 +31,12 @@ async function run() {
     const favoriteCollection = client.db("matrimonyDb").collection("favorite")
 
     // favourite collection
+
+    app.get('/favorite',async(req,res)=>{
+      const result = await favoriteCollection.find().toArray()
+      res.send(result)
+    })
+
     app.post('/favorite',async(req,res)=>{
       const request =req.body;
       const result =await  favoriteCollection.insertOne(request)
