@@ -31,6 +31,22 @@ async function run() {
     const reviewCollection = client.db("matrimonyDb").collection("review")
     const favoriteCollection = client.db("matrimonyDb").collection("favorite")
     const usersCollection = client.db("matrimonyDb").collection("users")
+    const postCollection = client.db("matrimonyDb").collection("postBio")
+
+// edit bio data post
+app.get('/postBio',async(req,res)=>{
+  const result =await postCollection.find().toArray()
+  res.send(result)
+})
+
+
+app.post('/postBio',async(req,res)=>{
+  const request = req.body;
+  const result =await postCollection.insertOne(request)
+  res.send(result)
+})
+
+
 
   //  jwt-------------
   app.post('/jwt',async(req,res)=>{
