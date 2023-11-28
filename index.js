@@ -29,9 +29,28 @@ async function run() {
     const bioCollection = client.db("matrimonyDb").collection("biodata")
     const reviewCollection = client.db("matrimonyDb").collection("review")
     const favoriteCollection = client.db("matrimonyDb").collection("favorite")
+    const usersCollection = client.db("matrimonyDb").collection("users")
+
+    app.get('/users',async(req,res)=>{
+      const result = await usersCollection.find().toArray()
+      res.send(result)
+    })
+
+  app.post('/users',async(req,res)=>{
+    const users = req.body;
+    // email
+    const query ={email:users.email}
+    const existing = await usersCollection.findOne(query);
+    if(existing){
+      return res.send({message:'user already exists',insertedId:null})
+    }
+    const result = await usersCollection.insertOne(users)
+    res.send(result)
+
+  })
+
 
     // favourite collection
-
     app.get('/favorite',async(req,res)=>{
       const result = await favoriteCollection.find().toArray()
       res.send(result)
