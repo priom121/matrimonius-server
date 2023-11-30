@@ -32,6 +32,9 @@ async function run() {
     const postCollection = client.db("matrimonyDb").collection("postBio");
     const modalCollection = client.db("matrimonyDb").collection("modal");
 
+
+    
+// request to the premium for admin approve page 
     app.post("/modal", async (req, res) => {
       const request = req.body;
       const result = await modalCollection.insertOne(request);
