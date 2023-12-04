@@ -3,6 +3,7 @@ const app = express();
 const cors = require("cors");
 const jwt = require("jsonwebtoken");
 require("dotenv").config();
+const stripe = require("stripe")(process.env.SECRET_KEY);
 const port = process.env.PORT || 5000;
 
 // middileware
@@ -31,7 +32,7 @@ async function run() {
     const usersCollection = client.db("matrimonyDb").collection("users");
     const postCollection = client.db("matrimonyDb").collection("postBio");
     const modalCollection = client.db("matrimonyDb").collection("modal");
-
+    const paymentCollection = client.db("matrimonyDb").collection("payment");
 
     
 // request to the premium for admin approve page 
@@ -46,8 +47,66 @@ async function run() {
       res.send(result);
     });
 
+ // payment collection
+
+ app.post("/payment", async (req, res) => {
+  const {
+    amount,
+    source,
+    description,
+    biodataId,
+    selfBiodataId,
+    selfEmail,
+    name,
+  } = req.body;
+
+  try {
+    const charge = await stripe.charges.create({
+      amount,
+      currency: "usd",
+      source,
+      description,
+    });
+
+    // Create a payment document
+    const paymentDocument = {
+      amount: charge.amount,
+      paymentMethod: charge.payment_method,
+      description: charge.description,
+      biodataId,
+      selfBiodataId,
+      selfEmail,
+      name,
+      // Add other necessary details to store in your database
+    };
+
+    const result = await paymentCollection.insertOne(paymentDocument);
+
+    res.send({ success: true, message: "Payment successful" });
+  } catch (error) {
+    console.error("Error processing payment:", error);
+    res.status(500).json({ success: false, error: "Payment failed" });
+  }
+});
+
+app.get("/payment", async (req, res) => {
+  const result = await paymentCollection.find().toArray();
+  res.send(result);
+});
+
+app.delete("/payment/:id", async (req, res) => {
+  const id = req.params.id;
+  const query = { _id: new ObjectId(id) };
+  const result = await paymentCollection.deleteOne(query);
+  res.send(result);
+});
+
+
+
     // edit bio data post
     app.get("/postBio", async (req, res) => {
+      // const email =req.params.email
+      // const query = {email : email}
       const result = await postCollection.find().toArray();
       res.send(result);
     });
@@ -143,8 +202,10 @@ async function run() {
     });
 
     // favourite collection
-    app.get("/favorite", async (req, res) => {
-      const result = await favoriteCollection.find().toArray();
+    app.get("/favorite/:email", async (req, res) => {
+      const email =req.params.email
+      const query = {email : email}
+      const result = await favoriteCollection.find(query).toArray()
       res.send(result);
     });
 
